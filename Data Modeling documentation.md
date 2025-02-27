@@ -8,7 +8,7 @@ The "RouteOptim" project aims to enhance delivery efficiency for small businesse
 
 The ERD visually represents the entities within the system and their interrelationships.
 
-![Entity-Relationship Diagram](path/to/your/ERD/image.png)
+![Entity-Relationship Diagram](Routeoptm.png)
 
 ## Entities and Attributes
 
