@@ -151,3 +151,88 @@ The data dictionary provides detailed descriptions of each attribute within the 
 
 - Ensure that all foreign key relationships are properly indexed to maintain database integrity and optimize query performance.
 - The `optimized_path` in the `routes` table should be structured in a format that can be easily parsed by the application for route reconstruction.
+
+---
+
+## 6. Set Up the Development Environment
+
+For the development and testing of the **RouteOptim** system, the following steps were taken:
+
+- **Database Management System**: 
+  - We selected **PostgreSQL** for the database as it supports complex queries, constraints, and foreign key relationships, making it a good fit for the project.
+- **Development Environment**: 
+  - We used **Docker** to create isolated environments for development and testing, ensuring consistency across different stages of development.
+  - A Docker container for the database was set up, and the environment was configured to ensure seamless deployment and testing.
+
+---
+
+## 7. Implement the Database Schema
+
+Once the schema design was complete, we implemented it using the following steps:
+
+- **SQL Commands**:
+  - We wrote SQL commands to create the necessary tables and establish foreign key relationships.
+- **Data Integrity**:
+  - We applied constraints such as `NOT NULL` to ensure the consistency and integrity of the data.
+  - Unique constraints were added to attributes like email in the `users` table to prevent duplicates.
+
+---
+
+## 8. Develop Application Logic
+
+The next step was to implement the business logic of the **RouteOptim** system using the Django framework.
+
+### Step 8.1: Create the Django Project and Application
+
+We created a new Django project and application:
+
+- **Django Project Setup**: 
+  - We created a Django project named `delivery_management`.
+- **Django Application**: 
+  - A Django application was created inside the project folder named `delivery_management` to handle the delivery management functionalities.
+
+### Step 8.2: User Registration View
+
+To implement user registration, we created a registration view to handle both GET and POST requests for the user registration form. 
+
+- **User Registration**: 
+  - We used Django’s built-in `UserCreationForm` to simplify user authentication and password management.
+  - After successful registration, users are redirected to the login page, and a success message is displayed.
+
+### Step 8.3: Set Up URLs for Registration
+
+We added the URL pattern for the registration view:
+
+- **URL Configuration**:
+  - The route `/register/` is mapped to the `register` view we created.
+
+### Step 8.4: Create Registration Template
+
+We created the registration template for the user to enter their details:
+
+- **Template Location**:
+  - The registration template was placed in `templates/delivery_management/register.html`.
+- **Form Fields**:
+  - The page includes form fields to capture user information such as name, email, password, etc.
+
+### Step 8.5: Static Files Setup for Styling
+
+For the styling of the registration page, we configured static files:
+
+- **CSS Styling**: 
+  - A `style.css` file was created under the `static/css/` directory to style the registration page.
+- **Static Files Configuration**: 
+  - Static files were configured properly in the `settings.py` file by adding the `STATIC_URL` setting.
+
+---
+
+## Conclusion
+
+At this stage, the **RouteOptim** system has a fully functional user registration page. Users can register their accounts, and the page is styled for better user experience. 
+
+### Next Steps:
+
+- **Login Functionality**: Implement login and authentication for users.
+- **Password Reset**: Add functionality for password recovery.
+- **Route Optimization**: Develop the route optimization logic to calculate the best delivery paths.
+- **Delivery Management**: Implement the delivery tracking system to manage deliveries based on optimized routes.
