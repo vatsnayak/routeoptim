@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{{ object.license_plate }} — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="{% url 'vehicle-list' %}" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left me-1"></i>Back to Fleet</a>
+    <div class="row g-4" data-aos="fade-up">
+        <div class="col-md-5">
+            <div class="card-gradient card-gradient-primary p-4" style="border-radius:var(--radius-xl);">
+                <i class="bi bi-truck-front-fill display-3 opacity-75 mb-3"></i>
+                <h3 class="fw-bold">{{ object.license_plate }}</h3>
+                <div class="opacity-75">{{ object.model }}</div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card-modern">
+                <div class="card-header"><i class="bi bi-info-circle me-2"></i>Vehicle Details</div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">License Plate</small>
+                            <div class="fw-bold mt-1">{{ object.license_plate }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">Model</small>
+                            <div class="fw-bold mt-1">{{ object.model }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">Capacity</small>
+                            <div class="fw-bold mt-1">{{ object.capacity }} units</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">Location</small>
+                            <div class="fw-bold mt-1">{{ object.current_location|default:"Unknown" }}</div>
+                        </div>
+                        <div class="col-12">
+                            <small class="text-muted fw-semibold text-uppercase">Assigned Driver</small>
+                            <div class="fw-bold mt-1">{{ object.driver|default:"Unassigned" }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if user.profile.role == 'admin' %}
+            <div class="d-flex gap-2 mt-3">
+                <a href="{% url 'vehicle-update' object.pk %}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+                <a href="{% url 'vehicle-delete' object.pk %}" class="btn btn-danger"><i class="bi bi-trash3 me-1"></i>Delete</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

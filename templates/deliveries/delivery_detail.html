@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Delivery #{{ object.id }} — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="mb-4" data-aos="fade-down">
+        <a href="{% url 'delivery-list' %}" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left me-1"></i>Back to Deliveries</a>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="fw-bold mb-0">Delivery <span class="text-gradient">#{{ object.id }}</span></h2>
+            <span class="status-badge {% if object.status == 'pending' %}status-pending{% elif object.status == 'in-transit' %}status-transit{% else %}status-delivered{% endif %}" style="font-size:0.85rem;">
+                {{ object.get_status_display }}
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4" data-aos="fade-up">
+        <div class="col-md-6">
+            <div class="card-modern">
+                <div class="card-header"><i class="bi bi-info-circle me-2"></i>Delivery Details</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Customer</small>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <div class="avatar-sm" style="width:32px;height:32px;font-size:0.8rem;">{{ object.customer.name|make_list|first|upper }}</div>
+                            <span class="fw-semibold">{{ object.customer }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Pickup Address</small>
+                        <div class="mt-1"><i class="bi bi-geo text-muted me-1"></i>{{ object.pickup_address }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Delivery Address</small>
+                        <div class="mt-1"><i class="bi bi-geo-alt-fill text-primary me-1"></i>{{ object.delivery_address }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Scheduled Time</small>
+                        <div class="mt-1"><i class="bi bi-calendar3 text-muted me-1"></i>{{ object.scheduled_time|date:"M d, Y — H:i" }}</div>
+                    </div>
+                    {% if object.delivered_at %}
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Delivered At</small>
+                        <div class="mt-1 text-success fw-semibold"><i class="bi bi-check-circle me-1"></i>{{ object.delivered_at|date:"M d, Y — H:i" }}</div>
+                    </div>
+                    {% endif %}
+                    {% if object.notes %}
+                    <div>
+                        <small class="text-muted fw-semibold text-uppercase">Notes</small>
+                        <div class="mt-1">{{ object.notes }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tracking Info -->
+            <div class="card-modern mt-3">
+                <div class="card-header"><i class="bi bi-upc-scan me-2"></i>Tracking</div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-2">
+                        <code style="font-size:0.8rem;background:var(--light);padding:0.4rem 0.8rem;border-radius:8px;flex:1;word-break:break-all;">{{ object.tracking_id }}</code>
+                        <button class="btn btn-sm btn-outline-primary" onclick="navigator.clipboard.writeText('{{ object.tracking_id }}');this.innerHTML='<i class=\'bi bi-check\'></i>';setTimeout(()=>this.innerHTML='<i class=\'bi bi-clipboard\'></i>',1500);">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <a href="{% url 'track-delivery' object.tracking_id %}" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Customer Tracking Page
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card-modern">
+                <div class="card-header"><i class="bi bi-truck me-2"></i>Assignment</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted fw-semibold text-uppercase">Driver</small>
+                        <div class="mt-1 fw-semibold">{{ object.driver|default:"Unassigned" }}</div>
+                    </div>
+                    <div>
+                        <small class="text-muted fw-semibold text-uppercase">Route</small>
+                        <div class="mt-1">
+                            {% if object.route %}
+                            <a href="{% url 'route-detail' object.route.pk %}" class="text-decoration-none">
+                                <i class="bi bi-signpost-split me-1"></i>Route #{{ object.route.id }}
+                            </a>
+                            {% else %}
+                            <span class="text-muted">No route assigned</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Status Update (for drivers) -->
+            {% if user.profile.role == 'driver' or user.profile.role == 'admin' %}
+            {% if object.status != 'delivered' %}
+            <div class="card-modern mt-3">
+                <div class="card-header"><i class="bi bi-lightning-charge me-2"></i>Quick Status Update</div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'delivery-status-update' object.pk %}" class="d-flex gap-2">
+                        {% csrf_token %}
+                        {% if object.status == 'pending' %}
+                        <input type="hidden" name="status" value="in-transit">
+                        <button type="submit" class="btn btn-info flex-fill text-white">
+                            <i class="bi bi-truck-front-fill me-1"></i>Mark In Transit
+                        </button>
+                        {% endif %}
+                        {% if object.status == 'in-transit' %}
+                        <input type="hidden" name="status" value="delivered">
+                        <button type="submit" class="btn btn-success flex-fill">
+                            <i class="bi bi-check-circle-fill me-1"></i>Mark Delivered
+                        </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- Google Maps Navigation -->
+            {% if object.delivery_lat and object.delivery_lng %}
+            <div class="card-modern mt-3">
+                <div class="card-header"><i class="bi bi-signpost me-2"></i>Navigation</div>
+                <div class="card-body">
+                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ object.delivery_lat }},{{ object.delivery_lng }}"
+                       target="_blank" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-map me-1"></i>Open in Google Maps
+                    </a>
+                    {% if object.delivery_lat %}
+                    <div id="detail-map" class="mt-3" style="height:200px;border-radius:var(--radius);"></div>
+                    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const map = L.map('detail-map').setView([{{ object.delivery_lat }}, {{ object.delivery_lng }}], 13);
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                            attribution: '&copy; OpenStreetMap', maxZoom: 19
+                        }).addTo(map);
+                        L.marker([{{ object.delivery_lat }}, {{ object.delivery_lng }}]).addTo(map);
+                    });
+                    </script>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Rating display -->
+            {% if object.rating %}
+            <div class="card-modern mt-3">
+                <div class="card-header"><i class="bi bi-star me-2"></i>Customer Rating</div>
+                <div class="card-body text-center">
+                    {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= object.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size:1.3rem;"></i>
+                    {% endfor %}
+                    {% if object.rating_comment %}
+                    <p class="text-muted small mt-2 mb-0">"{{ object.rating_comment }}"</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-flex gap-2 mt-3">
+                {% if user.profile.role == 'admin' or user.profile.role == 'driver' %}
+                <a href="{% url 'delivery-update' object.pk %}" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+                {% endif %}
+                {% if user.profile.role == 'admin' %}
+                <a href="{% url 'delivery-delete' object.pk %}" class="btn btn-danger"><i class="bi bi-trash3 me-1"></i>Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

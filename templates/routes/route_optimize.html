@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Optimize Route — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="{% url 'route-list' %}" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left me-1"></i>Back</a>
+
+    <div class="optimize-header" data-aos="fade-down">
+        <div class="position-relative" style="z-index:1;">
+            <h2 class="fw-bold mb-1"><i class="bi bi-lightning-charge-fill me-2"></i>Route Optimizer</h2>
+            <p class="opacity-75 mb-0">Select a vehicle and deliveries to generate an optimized route</p>
+        </div>
+    </div>
+
+    <div class="card-modern" data-aos="fade-up">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="vehicle" class="form-label fw-bold"><i class="bi bi-truck-front me-1"></i>Select Vehicle</label>
+                    <select name="vehicle" id="vehicle" class="form-select" required>
+                        <option value="">Choose a vehicle with a driver...</option>
+                        {% for v in vehicles %}
+                        <option value="{{ v.id }}">{{ v.license_plate }} — {{ v.model }} (Driver: {{ v.driver }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold"><i class="bi bi-box-seam me-1"></i>Select Pending Deliveries</label>
+                    {% if pending_deliveries %}
+                    <div style="max-height: 350px; overflow-y: auto;">
+                        {% for d in pending_deliveries %}
+                        <label class="delivery-check-item d-flex align-items-center gap-3">
+                            <input class="form-check-input m-0" type="checkbox" name="deliveries" value="{{ d.id }}">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-semibold">#{{ d.id }} — {{ d.customer }}</span>
+                                    <small class="text-muted">{{ d.scheduled_time|date:"M d, H:i" }}</small>
+                                </div>
+                                <small class="text-muted"><i class="bi bi-geo-alt me-1"></i>{{ d.delivery_address }}</small>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+                        <div class="empty-state-text">No pending deliveries available</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if pending_deliveries and vehicles %}
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-lightning-charge-fill me-2"></i>Optimize & Create Route
+                </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Fleet — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header" data-aos="fade-down">
+        <h2 class="page-title"><i class="bi bi-truck-front-fill"></i> Fleet</h2>
+        {% if user.profile.role == 'admin' %}
+        <a href="{% url 'vehicle-create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Vehicle</a>
+        {% endif %}
+    </div>
+    <div class="table-modern" data-aos="fade-up">
+        <table class="table">
+            <thead>
+                <tr><th>Vehicle</th><th>Model</th><th>Capacity</th><th>Driver</th><th>Location</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for v in vehicles %}
+                <tr>
+                    <td><span class="fw-bold" style="color:var(--primary);">{{ v.license_plate }}</span></td>
+                    <td><i class="bi bi-truck me-1 text-muted"></i>{{ v.model }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ v.capacity }} units</span></td>
+                    <td>
+                        {% if v.driver %}
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-sm" style="width:24px;height:24px;font-size:0.65rem;">{{ v.driver.username|make_list|first|upper }}</div>
+                            {{ v.driver }}
+                        </div>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td>{{ v.current_location|default:"—"|truncatechars:25 }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'vehicle-detail' v.pk %}" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-eye"></i></a>
+                            {% if user.profile.role == 'admin' %}
+                            <a href="{% url 'vehicle-update' v.pk %}" class="btn btn-sm btn-outline-secondary btn-icon"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon"><i class="bi bi-truck-front"></i></div><div class="empty-state-text">No vehicles in fleet</div></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

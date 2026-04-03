@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Routes — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header" data-aos="fade-down">
+        <h2 class="page-title"><i class="bi bi-signpost-split-fill"></i> Routes</h2>
+        {% if user.profile.role == 'admin' %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'route-optimize' %}" class="btn btn-success"><i class="bi bi-lightning-charge-fill me-1"></i> Optimize</a>
+            <a href="{% url 'route-create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Create</a>
+        </div>
+        {% endif %}
+    </div>
+    <div class="table-modern" data-aos="fade-up">
+        <table class="table">
+            <thead>
+                <tr><th>#</th><th>Date</th><th>Vehicle</th><th>Distance</th><th>Est. Time</th><th>Stops</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for r in routes %}
+                <tr>
+                    <td class="fw-semibold">#{{ r.id }}</td>
+                    <td><i class="bi bi-calendar3 me-1 text-muted"></i>{{ r.date|date:"M d, Y" }}</td>
+                    <td>{{ r.vehicle|default:"—" }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ r.total_distance|floatformat:1 }} km</span></td>
+                    <td><span class="badge bg-light text-dark border">{{ r.estimated_time|floatformat:0 }} min</span></td>
+                    <td><span class="fw-semibold" style="color:var(--primary);">{{ r.deliveries.count }}</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'route-detail' r.pk %}" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-eye"></i></a>
+                            {% if user.profile.role == 'admin' %}
+                            <a href="{% url 'route-update' r.pk %}" class="btn btn-sm btn-outline-secondary btn-icon"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7"><div class="empty-state"><div class="empty-state-icon"><i class="bi bi-signpost-split"></i></div><div class="empty-state-text">No routes created yet</div></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

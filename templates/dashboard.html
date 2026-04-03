@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+
+{% if role == 'admin' %}
+<!-- ═══════ ADMIN DASHBOARD ═══════ -->
+<div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-down">
+    <div>
+        <h2 class="fw-bold mb-1">Dashboard</h2>
+        <p class="text-muted mb-0">Welcome back, <span class="fw-semibold text-dark">{{ user.username }}</span></p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'delivery-create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Delivery
+        </a>
+        <a href="{% url 'route-optimize' %}" class="btn btn-success">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Optimize
+        </a>
+        <a href="{% url 'map-view' %}" class="btn btn-outline-primary">
+            <i class="bi bi-map me-1"></i> Map
+        </a>
+    </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-card stat-card-primary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">Total Deliveries</div>
+                    <div class="stat-value mt-1">{{ total_deliveries }}</div>
+                </div>
+                <div class="stat-icon stat-icon-primary">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-card stat-card-warning">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value mt-1">{{ pending_deliveries }}</div>
+                </div>
+                <div class="stat-icon stat-icon-warning">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="stat-card stat-card-info">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">In Transit</div>
+                    <div class="stat-value mt-1">{{ in_transit_deliveries }}</div>
+                </div>
+                <div class="stat-icon stat-icon-info">
+                    <i class="bi bi-truck-front-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="stat-card stat-card-success">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">Delivered</div>
+                    <div class="stat-value mt-1">{{ delivered_count }}</div>
+                </div>
+                <div class="stat-icon stat-icon-success">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-gradient card-gradient-primary p-4" style="border-radius:var(--radius-lg);">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-truck-front-fill display-6 opacity-75"></i>
+                <div>
+                    <div class="fs-3 fw-bold">{{ total_vehicles }}</div>
+                    <div class="small opacity-75">Vehicles in Fleet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-gradient card-gradient-cool p-4" style="border-radius:var(--radius-lg);">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-signpost-split-fill display-6 opacity-75"></i>
+                <div>
+                    <div class="fs-3 fw-bold">{{ total_routes }}</div>
+                    <div class="small opacity-75">Active Routes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card-gradient card-gradient-warm p-4" style="border-radius:var(--radius-lg);">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-people-fill display-6 opacity-75"></i>
+                <div>
+                    <div class="fs-3 fw-bold">{{ total_customers }}</div>
+                    <div class="small opacity-75">Customers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Deliveries Table -->
+<div class="table-modern" data-aos="fade-up">
+    <div class="d-flex justify-content-between align-items-center p-3 pb-0">
+        <h5 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-muted"></i>Recent Deliveries</h5>
+        <a href="{% url 'delivery-list' %}" class="btn btn-sm btn-outline-primary">View All <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr><th>#</th><th>Customer</th><th>Status</th><th>Scheduled</th><th>Driver</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for d in recent_deliveries %}
+            <tr>
+                <td class="fw-semibold">#{{ d.id }}</td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-sm" style="width:28px;height:28px;font-size:0.7rem;">{{ d.customer.name|make_list|first|upper }}</div>
+                        {{ d.customer }}
+                    </div>
+                </td>
+                <td>
+                    <span class="status-badge {% if d.status == 'pending' %}status-pending{% elif d.status == 'in-transit' %}status-transit{% else %}status-delivered{% endif %}">
+                        {{ d.get_status_display }}
+                    </span>
+                </td>
+                <td><i class="bi bi-calendar3 me-1 text-muted"></i>{{ d.scheduled_time|date:"M d, H:i" }}</td>
+                <td>{{ d.driver|default:"Unassigned" }}</td>
+                <td><a href="{% url 'delivery-detail' d.pk %}" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-arrow-right"></i></a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+                        <div class="empty-state-text">No deliveries yet. Create your first one!</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-3 mt-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="card-modern" style="height:100%;">
+            <div class="card-header"><i class="bi bi-pie-chart me-2 text-muted"></i>Status Breakdown</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="statusChart" style="max-height:220px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="card-modern" style="height:100%;">
+            <div class="card-header"><i class="bi bi-bar-chart me-2 text-muted"></i>Deliveries (7 days)</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="dailyChart" style="max-height:220px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card-modern" style="height:100%;">
+            <div class="card-header"><i class="bi bi-trophy me-2 text-muted"></i>Top Customers</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="customerChart" style="max-height:220px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{% url "chart-data" %}')
+        .then(r => r.json())
+        .then(data => {
+            // Status Doughnut
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pending', 'In Transit', 'Delivered'],
+                    datasets: [{
+                        data: [data.status_counts.pending, data.status_counts.in_transit, data.status_counts.delivered],
+                        backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '65%',
+                    plugins: { legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true, pointStyleWidth: 10, font: { family: 'Inter', size: 12 } } } }
+                }
+            });
+
+            // Daily Bar
+            new Chart(document.getElementById('dailyChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.daily_deliveries.map(d => d.date),
+                    datasets: [{
+                        label: 'Deliveries',
+                        data: data.daily_deliveries.map(d => d.count),
+                        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { grid: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Top Customers Horizontal Bar
+            new Chart(document.getElementById('customerChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.top_customers.map(c => c.name),
+                    datasets: [{
+                        label: 'Deliveries',
+                        data: data.top_customers.map(c => c.delivery_count),
+                        backgroundColor: ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe'],
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } }, y: { grid: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        });
+});
+</script>
+
+{% elif role == 'driver' %}
+<!-- ═══════ DRIVER DASHBOARD ═══════ -->
+<div class="mb-4" data-aos="fade-down">
+    <h2 class="fw-bold mb-1">My Dashboard</h2>
+    <p class="text-muted mb-0">Welcome back, <span class="fw-semibold text-dark">{{ user.first_name|default:user.username }}</span></p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="stat-card stat-card-warning">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value mt-1">{{ pending_count }}</div>
+                </div>
+                <div class="stat-icon stat-icon-warning"><i class="bi bi-clock-fill"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="stat-card stat-card-info">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-label">In Transit</div>
+                    <div class="stat-value mt-1">{{ in_transit_count }}</div>
+                </div>
+                <div class="stat-icon stat-icon-info"><i class="bi bi-truck-front-fill"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="card-modern">
+            <div class="card-body text-center">
+                {% if my_vehicle %}
+                <i class="bi bi-truck-front-fill display-6 text-primary mb-2"></i>
+                <h5 class="fw-bold mb-0">{{ my_vehicle.license_plate }}</h5>
+                <small class="text-muted">{{ my_vehicle.model }}</small>
+                {% else %}
+                <i class="bi bi-truck-front display-6 text-muted mb-2"></i>
+                <h6 class="text-muted mb-0">No Vehicle Assigned</h6>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-modern" data-aos="fade-up">
+    <div class="p-3 pb-0">
+        <h5 class="fw-bold mb-0"><i class="bi bi-box-seam-fill me-2 text-muted"></i>My Deliveries</h5>
+    </div>
+    <table class="table">
+        <thead>
+            <tr><th>#</th><th>Customer</th><th>Delivery Address</th><th>Status</th><th>Scheduled</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for d in my_deliveries %}
+            <tr>
+                <td class="fw-semibold">#{{ d.id }}</td>
+                <td>{{ d.customer }}</td>
+                <td><i class="bi bi-geo-alt me-1 text-muted"></i>{{ d.delivery_address|truncatechars:35 }}</td>
+                <td>
+                    <span class="status-badge {% if d.status == 'pending' %}status-pending{% elif d.status == 'in-transit' %}status-transit{% else %}status-delivered{% endif %}">
+                        {{ d.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ d.scheduled_time|date:"M d, H:i" }}</td>
+                <td><a href="{% url 'delivery-detail' d.pk %}" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-arrow-right"></i></a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+                        <div class="empty-state-text">No deliveries assigned to you.</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<!-- ═══════ CUSTOMER DASHBOARD ═══════ -->
+<div class="mb-4" data-aos="fade-down">
+    <h2 class="fw-bold mb-1">My Deliveries</h2>
+    <p class="text-muted mb-0">Track your delivery status in real-time</p>
+</div>
+
+<div class="table-modern" data-aos="fade-up">
+    <table class="table">
+        <thead>
+            <tr><th>#</th><th>Pickup</th><th>Delivery Address</th><th>Status</th><th>Scheduled</th></tr>
+        </thead>
+        <tbody>
+            {% for d in my_deliveries %}
+            <tr>
+                <td class="fw-semibold">#{{ d.id }}</td>
+                <td><i class="bi bi-geo me-1 text-muted"></i>{{ d.pickup_address|truncatechars:30 }}</td>
+                <td><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ d.delivery_address|truncatechars:30 }}</td>
+                <td>
+                    <span class="status-badge {% if d.status == 'pending' %}status-pending{% elif d.status == 'in-transit' %}status-transit{% else %}status-delivered{% endif %}">
+                        {{ d.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ d.scheduled_time|date:"M d, H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+                        <div class="empty-state-text">No deliveries found for your account.</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

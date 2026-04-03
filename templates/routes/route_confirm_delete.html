@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Delete Route — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-5" data-aos="fade-up">
+            <div class="delete-card">
+                <div class="delete-icon"><i class="bi bi-trash3"></i></div>
+                <h4 class="fw-bold">Delete Route #{{ object.id }}?</h4>
+                <p class="text-muted">Associated deliveries will be unlinked from this route.</p>
+                <form method="post" class="d-flex justify-content-center gap-2 mt-4">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4"><i class="bi bi-trash3 me-1"></i>Delete</button>
+                    <a href="{% url 'route-list' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Track Your Delivery — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-6 col-lg-5" data-aos="fade-up">
+            <div class="text-center mb-4">
+                <div class="brand-icon mx-auto mb-3" style="width:56px;height:56px;font-size:1.6rem;border-radius:16px;background:var(--gradient-cool);">
+                    <i class="bi bi-search"></i>
+                </div>
+                <h2 class="fw-bold">Track Your Delivery</h2>
+                <p class="text-muted">Enter your tracking ID to see real-time delivery status</p>
+            </div>
+            <div class="card-modern">
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="tracking_id" class="form-label fw-bold">
+                                <i class="bi bi-upc-scan me-1"></i>Tracking ID
+                            </label>
+                            <input type="text" name="tracking_id" id="tracking_id" class="form-control form-control-lg"
+                                   placeholder="e.g., a1b2c3d4-e5f6-..." required autofocus
+                                   style="font-family: monospace; font-size: 0.9rem;">
+                        </div>
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2">
+                            <i class="bi bi-search me-2"></i>Track Delivery
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

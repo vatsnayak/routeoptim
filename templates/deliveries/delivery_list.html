@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Deliveries — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header" data-aos="fade-down">
+        <h2 class="page-title"><i class="bi bi-box-seam-fill"></i> Deliveries</h2>
+        {% if user.profile.role == 'admin' or user.profile.role == 'driver' %}
+        <a href="{% url 'delivery-create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> New Delivery
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="table-modern" data-aos="fade-up">
+        <table class="table">
+            <thead>
+                <tr><th>#</th><th>Customer</th><th>Pickup</th><th>Delivery</th><th>Status</th><th>Driver</th><th>Scheduled</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for d in deliveries %}
+                <tr>
+                    <td class="fw-semibold">#{{ d.id }}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-sm" style="width:28px;height:28px;font-size:0.7rem;">{{ d.customer.name|make_list|first|upper }}</div>
+                            {{ d.customer }}
+                        </div>
+                    </td>
+                    <td><i class="bi bi-geo me-1 text-muted"></i>{{ d.pickup_address|truncatechars:25 }}</td>
+                    <td><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ d.delivery_address|truncatechars:25 }}</td>
+                    <td>
+                        <span class="status-badge {% if d.status == 'pending' %}status-pending{% elif d.status == 'in-transit' %}status-transit{% else %}status-delivered{% endif %}">
+                            {{ d.get_status_display }}
+                        </span>
+                    </td>
+                    <td>{{ d.driver|default:"—" }}</td>
+                    <td>{{ d.scheduled_time|date:"M d, H:i" }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'delivery-detail' d.pk %}" class="btn btn-sm btn-outline-primary btn-icon" title="View"><i class="bi bi-eye"></i></a>
+                            {% if user.profile.role == 'admin' or user.profile.role == 'driver' %}
+                            <a href="{% url 'delivery-update' d.pk %}" class="btn btn-sm btn-outline-secondary btn-icon" title="Edit"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-state-icon"><i class="bi bi-box-seam"></i></div>
+                            <div class="empty-state-text">No deliveries found</div>
+                            {% if user.profile.role == 'admin' or user.profile.role == 'driver' %}
+                            <a href="{% url 'delivery-create' %}" class="btn btn-primary btn-sm mt-3"><i class="bi bi-plus-lg me-1"></i>Create First Delivery</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

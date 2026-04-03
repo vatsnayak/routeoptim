@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Sign In — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-5 col-lg-4" data-aos="fade-up">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="brand-icon mx-auto mb-3" style="width:48px;height:48px;font-size:1.4rem;border-radius:14px;">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Welcome back</h4>
+                    <p class="opacity-75 mb-0 small">Sign in to your RouteOptim account</p>
+                </div>
+                <div class="auth-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% if form.errors %}
+                        <div class="alert alert-danger border-0 d-flex align-items-center gap-2" style="border-radius:10px;font-size:0.875rem;">
+                            <i class="bi bi-exclamation-circle-fill"></i>
+                            Invalid username or password.
+                        </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-2" style="border-radius:10px 0 0 10px;border-color:var(--border);background:var(--light);">
+                                    <i class="bi bi-person text-muted"></i>
+                                </span>
+                                <input type="text" name="username" id="id_username" class="form-control" style="border-left:0;border-radius:0 10px 10px 0;" placeholder="Enter username" required autofocus>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-2" style="border-radius:10px 0 0 10px;border-color:var(--border);background:var(--light);">
+                                    <i class="bi bi-lock text-muted"></i>
+                                </span>
+                                <input type="password" name="password" id="id_password" class="form-control" style="border-left:0;border-radius:0 10px 10px 0;" placeholder="Enter password" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                        </button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="{% url 'password_reset' %}" class="text-muted small text-decoration-none">
+                            <i class="bi bi-key me-1"></i>Forgot password?
+                        </a>
+                    </div>
+                    <hr class="my-3">
+                    <p class="text-center mb-0 small text-muted">
+                        Don't have an account? <a href="{% url 'register' %}" class="fw-semibold text-decoration-none" style="color:var(--primary);">Create one</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

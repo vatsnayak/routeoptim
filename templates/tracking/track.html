@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% block title %}Tracking #{{ delivery.id }} — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-4">
+        <div class="col-md-8 col-lg-6" data-aos="fade-up">
+            <!-- Status Header -->
+            <div class="text-center mb-4">
+                {% if delivery.status == 'delivered' %}
+                <div style="width:72px;height:72px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#059669;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <h2 class="fw-bold text-success">Delivered!</h2>
+                {% elif delivery.status == 'in-transit' %}
+                <div style="width:72px;height:72px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#2563eb;">
+                    <i class="bi bi-truck-front-fill"></i>
+                </div>
+                <h2 class="fw-bold" style="color:#2563eb;">On The Way</h2>
+                {% else %}
+                <div style="width:72px;height:72px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;color:#d97706;">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+                <h2 class="fw-bold" style="color:#d97706;">Pending</h2>
+                {% endif %}
+                <p class="text-muted">Delivery #{{ delivery.id }}</p>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="card-modern mb-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between position-relative" style="padding: 0 2rem;">
+                        <!-- Progress line -->
+                        <div style="position:absolute;top:20px;left:15%;right:15%;height:4px;background:#e2e8f0;border-radius:2px;z-index:0;">
+                            <div style="height:100%;border-radius:2px;transition:width 0.8s ease;background:{% if delivery.status == 'delivered' %}var(--gradient-success){% elif delivery.status == 'in-transit' %}var(--gradient-cool){% else %}var(--gradient-warm){% endif %};width:{% if delivery.status == 'delivered' %}100%{% elif delivery.status == 'in-transit' %}50%{% else %}0%{% endif %};"></div>
+                        </div>
+
+                        <!-- Steps -->
+                        <div class="text-center position-relative" style="z-index:1;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:{% if delivery.status %}var(--gradient-primary){% else %}#e2e8f0{% endif %};display:flex;align-items:center;justify-content:center;margin:0 auto;color:white;font-size:1rem;">
+                                <i class="bi bi-box-seam-fill"></i>
+                            </div>
+                            <small class="d-block mt-2 fw-semibold">Received</small>
+                        </div>
+                        <div class="text-center position-relative" style="z-index:1;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:{% if delivery.status == 'in-transit' or delivery.status == 'delivered' %}var(--gradient-cool){% else %}#e2e8f0{% endif %};display:flex;align-items:center;justify-content:center;margin:0 auto;color:white;font-size:1rem;">
+                                <i class="bi bi-truck-front-fill"></i>
+                            </div>
+                            <small class="d-block mt-2 fw-semibold">In Transit</small>
+                        </div>
+                        <div class="text-center position-relative" style="z-index:1;">
+                            <div style="width:40px;height:40px;border-radius:50%;background:{% if delivery.status == 'delivered' %}var(--gradient-success){% else %}#e2e8f0{% endif %};display:flex;align-items:center;justify-content:center;margin:0 auto;color:white;font-size:1rem;">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                            <small class="d-block mt-2 fw-semibold">Delivered</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delivery Details -->
+            <div class="card-modern mb-4">
+                <div class="card-body">
+                    <div class="mb-3 pb-3" style="border-bottom:1px solid var(--border);">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-geo text-muted"></i>
+                            <small class="text-muted fw-semibold text-uppercase">From</small>
+                        </div>
+                        <div class="fw-semibold">{{ delivery.pickup_address }}</div>
+                    </div>
+                    <div class="mb-3 pb-3" style="border-bottom:1px solid var(--border);">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="bi bi-geo-alt-fill" style="color:var(--primary);"></i>
+                            <small class="text-muted fw-semibold text-uppercase">To</small>
+                        </div>
+                        <div class="fw-semibold">{{ delivery.delivery_address }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">Scheduled</small>
+                            <div class="fw-semibold mt-1">{{ delivery.scheduled_time|date:"M d, Y" }}</div>
+                            <div class="text-muted small">{{ delivery.scheduled_time|date:"H:i" }}</div>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted fw-semibold text-uppercase">Customer</small>
+                            <div class="fw-semibold mt-1">{{ delivery.customer.name }}</div>
+                        </div>
+                    </div>
+                    {% if delivery.delivered_at %}
+                    <div class="mt-3 pt-3" style="border-top:1px solid var(--border);">
+                        <small class="text-muted fw-semibold text-uppercase">Delivered At</small>
+                        <div class="fw-semibold text-success mt-1">{{ delivery.delivered_at|date:"M d, Y — H:i" }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Map if coordinates available -->
+            {% if delivery.delivery_lat and delivery.delivery_lng %}
+            <div class="card-modern mb-4" data-aos="fade-up">
+                <div id="track-map" style="height:250px;border-radius:var(--radius-lg);"></div>
+            </div>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const map = L.map('track-map').setView([{{ delivery.delivery_lat }}, {{ delivery.delivery_lng }}], 13);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap', maxZoom: 19
+                }).addTo(map);
+                L.marker([{{ delivery.delivery_lat }}, {{ delivery.delivery_lng }}]).addTo(map)
+                    .bindPopup('<strong>{{ delivery.delivery_address }}</strong>').openPopup();
+                {% if delivery.pickup_lat %}
+                L.marker([{{ delivery.pickup_lat }}, {{ delivery.pickup_lng }}]).addTo(map)
+                    .bindPopup('<strong>Pickup: {{ delivery.pickup_address }}</strong>');
+                map.fitBounds([[{{ delivery.pickup_lat }}, {{ delivery.pickup_lng }}], [{{ delivery.delivery_lat }}, {{ delivery.delivery_lng }}]], {padding: [40,40]});
+                {% endif %}
+            });
+            </script>
+            {% endif %}
+
+            <!-- Navigation link -->
+            {% if delivery.delivery_lat and delivery.delivery_lng %}
+            <div class="text-center mb-4">
+                <a href="https://www.google.com/maps/dir/?api=1&destination={{ delivery.delivery_lat }},{{ delivery.delivery_lng }}"
+                   target="_blank" class="btn btn-outline-primary">
+                    <i class="bi bi-map me-1"></i> Open in Google Maps
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Rating (for delivered) -->
+            {% if delivery.status == 'delivered' %}
+            <div class="card-modern" data-aos="fade-up">
+                <div class="card-body p-4 text-center">
+                    {% if delivery.rating %}
+                    <h5 class="fw-bold mb-2">Your Rating</h5>
+                    <div class="mb-2">
+                        {% for i in "12345" %}
+                        <i class="bi bi-star{% if forloop.counter <= delivery.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size:1.5rem;"></i>
+                        {% endfor %}
+                    </div>
+                    {% if delivery.rating_comment %}<p class="text-muted">{{ delivery.rating_comment }}</p>{% endif %}
+                    {% else %}
+                    <h5 class="fw-bold mb-2">How was your delivery?</h5>
+                    <p class="text-muted small">Help us improve by rating your experience</p>
+                    <a href="{% url 'rate-delivery' delivery.tracking_id %}" class="btn btn-primary-gradient">
+                        <i class="bi bi-star me-1"></i>Rate Delivery
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="text-center mt-3">
+                <a href="{% url 'track-lookup' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-search me-1"></i>Track Another
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Customers — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header" data-aos="fade-down">
+        <h2 class="page-title"><i class="bi bi-people-fill"></i> Customers</h2>
+        <a href="{% url 'customer-create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i> Add Customer</a>
+    </div>
+    <div class="table-modern" data-aos="fade-up">
+        <table class="table">
+            <thead>
+                <tr><th>Customer</th><th>Contact</th><th>Address</th><th>Deliveries</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                {% for c in customers %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-sm" style="width:32px;height:32px;font-size:0.8rem;background:var(--gradient-warm);">{{ c.name|make_list|first|upper }}</div>
+                            <span class="fw-semibold">{{ c.name }}</span>
+                        </div>
+                    </td>
+                    <td>{{ c.contact_info|default:"—" }}</td>
+                    <td><i class="bi bi-geo-alt me-1 text-muted"></i>{{ c.address|truncatechars:35 }}</td>
+                    <td><span class="badge bg-light text-dark border fw-bold">{{ c.deliveries.count }}</span></td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'customer-detail' c.pk %}" class="btn btn-sm btn-outline-primary btn-icon"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'customer-update' c.pk %}" class="btn btn-sm btn-outline-secondary btn-icon"><i class="bi bi-pencil"></i></a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon"><i class="bi bi-people"></i></div><div class="empty-state-text">No customers yet</div></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

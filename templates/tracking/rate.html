@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Rate Delivery — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-5" data-aos="fade-up">
+            <div class="card-modern">
+                <div class="card-body p-4 text-center">
+                    <div style="width:56px;height:56px;border-radius:50%;background:#fef3c7;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:#d97706;">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <h4 class="fw-bold">Rate Delivery #{{ delivery.id }}</h4>
+                    <p class="text-muted small mb-4">{{ delivery.delivery_address }}</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <div class="star-rating d-flex justify-content-center gap-2" id="starRating">
+                                {% for i in "12345" %}
+                                <label style="cursor:pointer;">
+                                    <input type="radio" name="rating" value="{{ forloop.counter }}" style="display:none;" required>
+                                    <i class="bi bi-star star-btn" data-value="{{ forloop.counter }}" style="font-size:2.5rem;color:#cbd5e1;transition:all 0.2s;"></i>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-4 text-start">
+                            <label for="comment" class="form-label">Comment (optional)</label>
+                            <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Tell us about your experience..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2">
+                            <i class="bi bi-send me-1"></i>Submit Rating
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-btn');
+    stars.forEach(function(star) {
+        star.addEventListener('mouseenter', function() {
+            const val = parseInt(this.dataset.value);
+            stars.forEach(function(s, i) {
+                s.className = i < val ? 'bi bi-star-fill star-btn' : 'bi bi-star star-btn';
+                s.style.color = i < val ? '#f59e0b' : '#cbd5e1';
+                if (i < val) s.style.transform = 'scale(1.2)';
+                else s.style.transform = 'scale(1)';
+            });
+        });
+        star.addEventListener('click', function() {
+            const val = parseInt(this.dataset.value);
+            this.closest('label').querySelector('input').checked = true;
+            stars.forEach(function(s, i) {
+                s.className = i < val ? 'bi bi-star-fill star-btn' : 'bi bi-star star-btn';
+                s.style.color = i < val ? '#f59e0b' : '#cbd5e1';
+            });
+        });
+    });
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+        const checked = document.querySelector('input[name="rating"]:checked');
+        const val = checked ? parseInt(checked.value) : 0;
+        stars.forEach(function(s, i) {
+            s.className = i < val ? 'bi bi-star-fill star-btn' : 'bi bi-star star-btn';
+            s.style.color = i < val ? '#f59e0b' : '#cbd5e1';
+            s.style.transform = 'scale(1)';
+        });
+    });
+});
+</script>
+{% endblock %}

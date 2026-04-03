@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Create Account — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center py-4">
+        <div class="col-md-6 col-lg-5" data-aos="fade-up">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="brand-icon mx-auto mb-3" style="width:48px;height:48px;font-size:1.4rem;border-radius:14px;">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Create your account</h4>
+                    <p class="opacity-75 mb-0 small">Start optimizing your delivery routes today</p>
+                </div>
+                <div class="auth-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">
+                                {% if field.name == 'username' %}<i class="bi bi-person me-1"></i>
+                                {% elif field.name == 'email' %}<i class="bi bi-envelope me-1"></i>
+                                {% elif 'password' in field.name %}<i class="bi bi-lock me-1"></i>
+                                {% elif field.name == 'role' %}<i class="bi bi-people me-1"></i>
+                                {% elif field.name == 'contact_info' %}<i class="bi bi-telephone me-1"></i>
+                                {% endif %}
+                                {{ field.label }}
+                            </label>
+                            {% if field.name == 'role' %}
+                            <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-select">
+                                {% for value, label in field.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <input type="{% if 'password' in field.name %}password{% elif field.name == 'email' %}email{% else %}text{% endif %}"
+                                   name="{{ field.name }}" id="{{ field.id_for_label }}"
+                                   class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                   value="{{ field.value|default:'' }}"
+                                   placeholder="{% if field.name == 'username' %}Choose a username{% elif field.name == 'email' %}your@email.com{% elif field.name == 'contact_info' %}+1-555-0000{% else %}{{ field.label }}{% endif %}"
+                                   {% if field.name == 'username' %}autofocus{% endif %}>
+                            {% endif %}
+                            {% if field.help_text %}
+                            <div class="form-text"><i class="bi bi-info-circle me-1"></i>{{ field.help_text|safe }}</div>
+                            {% endif %}
+                            {% for error in field.errors %}
+                            <div class="invalid-feedback d-block"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-2 mt-2">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Create Account
+                        </button>
+                    </form>
+                    <hr class="my-3">
+                    <p class="text-center mb-0 small text-muted">
+                        Already have an account? <a href="{% url 'login' %}" class="fw-semibold text-decoration-none" style="color:var(--primary);">Sign in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
