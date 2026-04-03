@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Import Deliveries — RouteOptim{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6" data-aos="fade-up">
+            <a href="{% url 'delivery-list' %}" class="btn btn-sm btn-outline-secondary mb-3"><i class="bi bi-arrow-left me-1"></i>Back</a>
+            <div class="card-modern">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-upload me-2"></i>Import Deliveries from CSV</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert border-0 mb-4" style="background:var(--primary-bg);color:var(--primary);border-radius:12px;">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>CSV Format:</strong> Your file must have these columns:
+                        <code class="d-block mt-2" style="font-size:0.8rem;">pickup_address, delivery_address, customer_name, scheduled_time</code>
+                        <small class="d-block mt-1 opacity-75">Date format: YYYY-MM-DD HH:MM (e.g., 2025-04-15 14:30)</small>
+                    </div>
+
+                    <!-- Sample CSV Download -->
+                    <div class="mb-4">
+                        <a href="#" class="btn btn-sm btn-outline-secondary" id="downloadSample">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Download Sample CSV
+                        </a>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="csv_file" class="form-label fw-bold">
+                                <i class="bi bi-file-earmark-csv me-1"></i>Select CSV File
+                            </label>
+                            {{ form.csv_file }}
+                            {% if form.csv_file.help_text %}
+                            <div class="form-text">{{ form.csv_file.help_text }}</div>
+                            {% endif %}
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-upload me-1"></i>Import Deliveries
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('downloadSample').addEventListener('click', function(e) {
+    e.preventDefault();
+    const csv = 'pickup_address,delivery_address,customer_name,scheduled_time\n"Warehouse A, Manhattan","123 Main St, New York","Acme Corp","2025-04-15 14:30"\n"Warehouse B, Brooklyn","456 Oak Ave, Boston","TechStart Inc","2025-04-15 16:00"';
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'sample_deliveries.csv';
+    a.click();
+});
+</script>
+{% endblock %}

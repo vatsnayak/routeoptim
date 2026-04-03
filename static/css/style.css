@@ -823,6 +823,47 @@ body {
 [data-bs-theme="dark"] .stat-icon-success { background: rgba(16, 185, 129, 0.15); }
 [data-bs-theme="dark"] .delivery-check-item { border-color: #334155; }
 [data-bs-theme="dark"] .delivery-check-item:hover { border-color: var(--primary-light); background: rgba(99, 102, 241, 0.1); }
+[data-bs-theme="dark"] .geocode-results { background: #1e293b !important; border-color: #334155 !important; }
+[data-bs-theme="dark"] .geocode-item { border-bottom-color: #334155; }
+[data-bs-theme="dark"] .geocode-item:hover { background: rgba(99, 102, 241, 0.15); }
+
+/* ══════════════════════════════════════════
+   Pagination
+   ══════════════════════════════════════════ */
+.pagination .page-link {
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.85rem;
+    transition: var(--transition);
+}
+.pagination .page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+.pagination .page-link:hover {
+    background: var(--primary-bg);
+    color: var(--primary);
+    border-color: var(--primary-light);
+}
+
+/* ══════════════════════════════════════════
+   Driver Mobile Optimizations
+   ══════════════════════════════════════════ */
+@media (max-width: 576px) {
+    .driver-action-btn {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: var(--radius-lg);
+    }
+    .table-modern tbody td { padding: 0.75rem 0.5rem; font-size: 0.8rem; }
+    .table-modern thead th { padding: 0.75rem 0.5rem; font-size: 0.7rem; }
+    .stat-card { padding: 1rem; }
+    .stat-value { font-size: 1.4rem; }
+}
 
 /* ══════════════════════════════════════════
    Optimize Page

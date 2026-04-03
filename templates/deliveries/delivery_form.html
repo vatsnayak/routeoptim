@@ -16,9 +16,12 @@
                     <form method="post">
                         {% csrf_token %}
                         {% for field in form %}
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                             {{ field }}
+                            {% if field.name == 'delivery_address' or field.name == 'pickup_address' %}
+                            <div class="geocode-results" id="geocode-{{ field.name }}" style="display:none;position:absolute;z-index:100;width:100%;background:white;border:1px solid var(--border);border-radius:0 0 10px 10px;box-shadow:var(--card-shadow);max-height:200px;overflow-y:auto;"></div>
+                            {% endif %}
                             {% for error in field.errors %}
                             <div class="text-danger small mt-1"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
                             {% endfor %}
@@ -36,4 +39,54 @@
         </div>
     </div>
 </div>
+<style>
+.geocode-item { padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
+.geocode-item:hover { background: var(--primary-bg); }
+.geocode-item:last-child { border-bottom: none; }
+.geocode-item i { color: var(--primary); margin-right: 6px; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Address autocomplete via geocoding
+    ['pickup_address', 'delivery_address'].forEach(function(name) {
+        const input = document.querySelector('[name="' + name + '"]');
+        const results = document.getElementById('geocode-' + name);
+        if (!input || !results) return;
+
+        let timer;
+        input.addEventListener('input', function() {
+            clearTimeout(timer);
+            const q = input.value.trim();
+            if (q.length < 3) { results.style.display = 'none'; return; }
+
+            timer = setTimeout(function() {
+                fetch('/api/geocode/?address=' + encodeURIComponent(q))
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            results.innerHTML = data.results.map(r =>
+                                '<div class="geocode-item" data-name="' + r.display_name + '">' +
+                                '<i class="bi bi-geo-alt-fill"></i>' + r.display_name + '</div>'
+                            ).join('');
+                            results.style.display = 'block';
+
+                            results.querySelectorAll('.geocode-item').forEach(function(item) {
+                                item.addEventListener('click', function() {
+                                    input.value = this.dataset.name;
+                                    results.style.display = 'none';
+                                });
+                            });
+                        } else {
+                            results.style.display = 'none';
+                        }
+                    });
+            }, 300);
+        });
+
+        input.addEventListener('blur', function() {
+            setTimeout(function() { results.style.display = 'none'; }, 200);
+        });
+    });
+});
+</script>
 {% endblock %}

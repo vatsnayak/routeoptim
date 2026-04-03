@@ -20,25 +20,29 @@ urlpatterns = [
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
-    # NEW: Map View
+    # Profile
+    path('profile/', views.profile_settings, name='profile-settings'),
+    path('profile/password/', views.change_password, name='change-password'),
+
+    # Map
     path('map/', views.map_view, name='map-view'),
 
-    # NEW: Customer Tracking (public — no login required)
+    # Tracking (public)
     path('track/', views.track_lookup, name='track-lookup'),
     path('track/<uuid:tracking_id>/', views.track_delivery, name='track-delivery'),
     path('track/<uuid:tracking_id>/rate/', views.rate_delivery, name='rate-delivery'),
 
-    # NEW: Charts API
+    # API
     path('api/charts/', views.chart_data, name='chart-data'),
+    path('api/dark-mode/', views.toggle_dark_mode, name='toggle-dark-mode'),
+    path('api/geocode/', views.geocode_address, name='geocode-address'),
 
-    # NEW: CSV Export
+    # Export / Import
     path('export/deliveries/', views.export_deliveries_csv, name='export-deliveries'),
     path('export/routes/', views.export_routes_csv, name='export-routes'),
+    path('import/deliveries/', views.import_deliveries_csv, name='import-deliveries'),
 
-    # NEW: Dark Mode Toggle
-    path('api/dark-mode/', views.toggle_dark_mode, name='toggle-dark-mode'),
-
-    # NEW: Quick Status Update
+    # Quick Status Update
     path('deliveries/<int:pk>/status/', views.update_delivery_status, name='delivery-status-update'),
 
     # Deliveries

@@ -83,6 +83,7 @@
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-grid me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile-settings' %}"><i class="bi bi-person-gear me-2"></i>Profile Settings</a></li>
                             {% if user.is_staff %}<li><a class="dropdown-item" href="/admin/"><i class="bi bi-gear me-2"></i>Admin Panel</a></li>{% endif %}
                             <li><a class="dropdown-item" href="{% url 'track-lookup' %}"><i class="bi bi-search me-2"></i>Track Delivery</a></li>
                             {% if user.profile.role == 'admin' %}
