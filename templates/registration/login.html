@@ -6,9 +6,8 @@
         <div class="col-md-5 col-lg-4" data-aos="fade-up">
             <div class="auth-card">
                 <div class="auth-header">
-                    <div class="brand-icon mx-auto mb-3" style="width:48px;height:48px;font-size:1.4rem;border-radius:14px;">
-                        <i class="bi bi-geo-alt-fill"></i>
-                    </div>
+                    {% load static %}
+                    <img src="{% static 'img/logo.svg' %}" alt="RouteOptim" width="56" height="56" class="mb-3" style="border-radius:14px;">
                     <h4 class="fw-bold mb-1">Welcome back</h4>
                     <p class="opacity-75 mb-0 small">Sign in to your RouteOptim account</p>
                 </div>
